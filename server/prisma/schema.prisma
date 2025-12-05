@@ -1,0 +1,188 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 1. Enum cho Vùng miền (Bắc - Trung - Nam)
+enum Region {
+  NORTH   // Miền Bắc
+  CENTRAL // Miền Trung
+  SOUTH   // Miền Nam
+}
+
+// 2. Enum cho Trạng thái đơn hàng
+enum BookingStatus {
+  PENDING   // Chờ duyệt
+  CONFIRMED // Đã xác nhận
+  CANCELLED // Đã hủy
+}
+
+// 3. Enum vai trò người dùng
+enum Role {
+  USER
+  ADMIN
+}
+
+// 4. Enum loại giảm giá voucher
+enum DiscountType {
+  PERCENT // Giảm theo phần trăm
+  FIXED   // Giảm số tiền cố định
+}
+
+// 3. Bảng Địa điểm (Location) - Dùng để hiển thị trên Bản đồ
+model Location {
+  id          Int      @id @default(autoincrement())
+  name        String   // Tên địa điểm (VD: Đà Lạt)
+  description String?  // Mô tả ngắn
+  region      Region   // Thuộc vùng nào
+  latitude    Float    // Vĩ độ (Google Maps/OSM)
+  longitude   Float    // Kinh độ
+  image       String   // Link ảnh đại diện
+  
+  tours       Tour[]   // Quan hệ: 1 địa điểm có nhiều tour
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// 4. Bảng Tour du lịch
+model Tour {
+  id          Int      @id @default(autoincrement())
+  name        String   // Tên tour (VD: Săn mây Đà Lạt)
+  description String   // Chi tiết lịch trình (dạng text dài hoặc HTML)
+  price       Float    // Giá tour
+  duration    String   // Thời gian (VD: "2 ngày 1 đêm")
+  transport   String?  // Phương tiện (VD: "Xe Limousine")
+  images      String[] // Danh sách ảnh (Postgres hỗ trợ mảng String[])
+  
+  locationId  Int
+  location    Location @relation(fields: [locationId], references: [id])
+  
+  bookings    Booking[]
+  reviews     Review[]
+  schedules   TourSchedule[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// 9. Bảng Lịch khởi hành (TourSchedule)
+model TourSchedule {
+  id             Int      @id @default(autoincrement())
+  departureDate  DateTime // Ngày khởi hành
+  returnDate     DateTime // Ngày về
+  price          Float?   // Giá riêng cho lịch này (nếu khác giá gốc)
+  availableSeats Int      // Số chỗ còn nhận
+  
+  tourId         Int
+  tour           Tour     @relation(fields: [tourId], references: [id])
+  
+  bookings       Booking[]
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// 10. Bảng Thư viện ảnh (Gallery)
+model GalleryImage {
+  id        Int      @id @default(autoincrement())
+  src       String
+  title     String
+  location  String
+  category  String   // beach, mountain, culture, city
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// 5. Bảng Đơn hàng (Booking)
+model Booking {
+  id            Int           @id @default(autoincrement())
+  customerName  String
+  customerEmail String
+  customerPhone String
+  adultCount    Int           // Số người lớn
+  childCount    Int           @default(0) // Số trẻ em
+  totalPrice    Float         // Tổng tiền
+  status        BookingStatus @default(PENDING)
+  
+  tourId        Int
+  tour          Tour          @relation(fields: [tourId], references: [id])
+  
+  scheduleId    Int?          // Link tới lịch khởi hành cụ thể
+  schedule      TourSchedule? @relation(fields: [scheduleId], references: [id])
+  
+  departureDate DateTime?     // Lưu lại ngày đi để dễ query (redundant nhưng tiện)
+
+  userId        Int?          // Người đặt (có thể là khách, nên optional)
+  user          User?         @relation(fields: [userId], references: [id])
+  
+  review        Review?       // Quan hệ 1-1 với Review
+
+  createdAt     DateTime      @default(now())
+}
+
+// 6. Bảng Người dùng (User)
+model User {
+  id           Int       @id @default(autoincrement())
+  name         String
+  email        String    @unique
+  phone        String?
+  passwordHash String
+  role         Role      @default(USER)
+
+  bookings     Booking[]
+  reviews      Review[]
+
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+// 7. Bảng Đánh giá (Review)
+model Review {
+  id        Int      @id @default(autoincrement())
+  rating    Int      // Điểm đánh giá 1-5
+  comment   String   // Nội dung đánh giá
+  images    String[] @default([]) // Ảnh đánh giá (nếu có)
+  
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  
+  tourId    Int
+  tour      Tour     @relation(fields: [tourId], references: [id])
+  
+  bookingId Int?     @unique // Mỗi booking chỉ được review 1 lần
+  booking   Booking? @relation(fields: [bookingId], references: [id])
+
+  createdAt DateTime @default(now())
+  
+  @@index([tourId])
+  @@index([userId])
+}
+
+// 8. Bảng Voucher (Mã giảm giá)
+model Voucher {
+  id           Int          @id @default(autoincrement())
+  code         String       @unique // Mã voucher (VD: SUMMER2024)
+  discountType DiscountType // Loại giảm giá: PERCENT hoặc FIXED
+  value        Float        // Giá trị (nếu PERCENT thì 10 = 10%, nếu FIXED thì 100000 = 100k)
+  maxDiscount  Float?       // Giảm tối đa (chỉ áp dụng cho PERCENT)
+  expiresAt    DateTime?    // Ngày hết hạn (null = vô thời hạn)
+  usageLimit   Int?         // Số lần dùng tối đa (null = không giới hạn)
+  usedCount    Int          @default(0) // Số lần đã dùng
+  isActive     Boolean      @default(true) // Trạng thái kích hoạt
+  
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  
+  @@index([code])
+}

@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    /* Cấu hình môi trường Node.js */
+    "target": "ES2020",             // Bản Node hiện đại hỗ trợ tốt ES2020
+    "module": "CommonJS",           // Ổn định nhất cho Node.js backend
+    "moduleResolution": "node",     
+    "rootDir": "./src",             // Nơi chứa code nguồn
+    "outDir": "./dist",             // Nơi chứa code sau khi build
+    
+    /* Các thư viện hỗ trợ */
+    "lib": ["ES2020"],              // Không cần DOM vì server không có giao diện
+    "types": ["node", "express"],
+
+    /* Ép kiểu chặt chẽ (Nên dùng) */
+    "strict": true,
+    "esModuleInterop": true,        // Giúp import các thư viện cũ dễ hơn
+    "skipLibCheck": true,           // Bỏ qua check lỗi trong file node_modules
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules"]
+}
