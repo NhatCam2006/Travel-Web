@@ -64,9 +64,18 @@ Tạo file `.env` trong thư mục `server` và cấu hình các biến môi tr�
 PORT=5000
 DATABASE_URL="postgresql://user:password@localhost:5432/travel_db?schema=public"
 JWT_SECRET="your_super_secret_key"
-# Cấu hình Email (nếu có)
+
+# Tài khoản Admin mặc định (sẽ được tạo khi seed database)
+ADMIN_EMAIL="admin@example.com"
+ADMIN_PASSWORD="Admin@123"
+
+# Cấu hình Email (để gửi mail xác nhận đặt tour)
 EMAIL_USER="your-email@gmail.com"
 EMAIL_PASS="your-app-password"
+
+# Cloudinary (để upload ảnh)
+const CLOUD_NAME = "dtvdvwzn2"
+const UPLOAD_PRESET = "travel_web"
 ```
 
 Chạy migration để tạo bảng trong database:
@@ -98,6 +107,20 @@ npm run dev
 ```
 
 Truy cập vào `http://localhost:5173` để trải nghiệm website.
+
+## 👤 Tài khoản Admin
+
+Tài khoản Admin được tạo tự động khi chạy lệnh `npx prisma db seed`.
+
+Thông tin đăng nhập mặc định (có thể thay đổi trong file `.env`):
+
+| Email               | Mật khẩu    |
+| ------------------- | ----------- |
+| `admin@example.com` | `Admin@123` |
+
+**Truy cập Admin Panel:** `http://localhost:5173/admin`
+
+> ⚠️ **Lưu ý:** Nhớ thay đổi email và mật khẩu Admin trong file `server/.env` trước khi deploy lên production!
 
 ## 📂 Cấu trúc thư mục
 
