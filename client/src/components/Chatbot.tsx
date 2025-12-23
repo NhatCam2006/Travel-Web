@@ -464,8 +464,8 @@ Locations: ${locations.map(l => l.name).join(', ')}`;
                                 {/* Message bubble */}
                                 <div
                                     className={`px-4 py-3 ${msg.sender === 'user'
-                                            ? 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-2xl rounded-br-md shadow-lg shadow-emerald-500/20'
-                                            : 'bg-white text-gray-800 rounded-2xl rounded-tl-md shadow-md border border-gray-100'
+                                        ? 'bg-gradient-to-br from-emerald-500 to-teal-600 text-white rounded-2xl rounded-br-md shadow-lg shadow-emerald-500/20'
+                                        : 'bg-white text-gray-800 rounded-2xl rounded-tl-md shadow-md border border-gray-100'
                                         }`}
                                 >
                                     <div className="text-sm leading-relaxed whitespace-pre-wrap">
