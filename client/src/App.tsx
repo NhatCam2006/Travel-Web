@@ -24,6 +24,8 @@ import Footer from "./components/Footer";
 import MobileNav from "./components/MobileNav";
 import Chatbot from "./components/Chatbot";
 import { Toaster } from "react-hot-toast";
+import { motion, AnimatePresence } from "framer-motion";
+import { FiMessageCircle, FiX } from "react-icons/fi";
 
 function App() {
   const [showChatbot, setShowChatbot] = useState(false);
@@ -85,13 +87,65 @@ function App() {
       </main>
       <Footer />
       <MobileNav />
-      <button
-        className="fixed bottom-6 right-6 z-[1100] bg-blue-600 text-white px-4 py-2 rounded-full shadow-lg hover:bg-blue-700"
+      
+      {/* Floating Chat Button */}
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className={`fixed bottom-6 right-6 z-[1200] w-14 h-14 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ${
+          showChatbot 
+            ? 'bg-gray-700 hover:bg-gray-800' 
+            : 'bg-gradient-to-r from-emerald-500 to-teal-600 hover:shadow-xl hover:shadow-emerald-500/30'
+        }`}
         onClick={() => setShowChatbot((v) => !v)}
       >
-        {showChatbot ? "Đóng Chatbot" : "Mở Chatbot"}
-      </button>
-      {showChatbot && <Chatbot />}
+        <AnimatePresence mode="wait">
+          {showChatbot ? (
+            <motion.div
+              key="close"
+              initial={{ rotate: -90, opacity: 0 }}
+              animate={{ rotate: 0, opacity: 1 }}
+              exit={{ rotate: 90, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <FiX className="w-6 h-6 text-white" />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="open"
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="relative"
+            >
+              <FiMessageCircle className="w-6 h-6 text-white" />
+              {/* Notification dot */}
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full border-2 border-white animate-pulse" />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.button>
+
+      {/* Chat tooltip */}
+      {!showChatbot && (
+        <motion.div
+          initial={{ opacity: 0, x: 10 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="fixed bottom-8 right-24 z-[1200] hidden md:block"
+        >
+          <div className="bg-white px-4 py-2 rounded-xl shadow-lg border border-gray-100 text-sm text-gray-700">
+            <span className="font-medium text-emerald-600">💬 Hỗ trợ 24/7</span>
+            <p className="text-xs text-gray-500">Hỏi tôi về tour!</p>
+          </div>
+          <div className="absolute top-1/2 -right-2 -translate-y-1/2 w-0 h-0 border-t-8 border-b-8 border-l-8 border-transparent border-l-white" />
+        </motion.div>
+      )}
+
+      {/* Chatbot Component */}
+      <AnimatePresence>
+        {showChatbot && <Chatbot onClose={() => setShowChatbot(false)} />}
+      </AnimatePresence>
     </div>
   );
 }
