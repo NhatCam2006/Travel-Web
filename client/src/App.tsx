@@ -18,12 +18,15 @@ import PopularTours from "./pages/PopularTours";
 import Gallery from "./pages/Gallery";
 import Home from "./pages/Home";
 import Destinations from "./pages/Destinations";
+import React, { useState } from "react";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import MobileNav from "./components/MobileNav";
+import Chatbot from "./components/Chatbot";
 import { Toaster } from "react-hot-toast";
 
 function App() {
+  const [showChatbot, setShowChatbot] = useState(false);
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
       <Toaster
@@ -82,6 +85,13 @@ function App() {
       </main>
       <Footer />
       <MobileNav />
+      <button
+        className="fixed bottom-6 right-6 z-[1100] bg-blue-600 text-white px-4 py-2 rounded-full shadow-lg hover:bg-blue-700"
+        onClick={() => setShowChatbot((v) => !v)}
+      >
+        {showChatbot ? "Đóng Chatbot" : "Mở Chatbot"}
+      </button>
+      {showChatbot && <Chatbot />}
     </div>
   );
 }
