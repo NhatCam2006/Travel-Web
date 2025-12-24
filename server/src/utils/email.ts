@@ -42,22 +42,19 @@ export const sendBookingConfirmation = async (
         
         <div style="background-color: #f8fafc; padding: 15px; border-radius: 6px; margin: 20px 0;">
           <h3 style="margin-top: 0; color: #1e40af;">${tour.name}</h3>
-          <p style="margin: 5px 0;"><strong>Mã đơn hàng:</strong> #${
-            booking.id
-          }</p>
+          <p style="margin: 5px 0;"><strong>Mã đơn hàng:</strong> #${booking.id
+    }</p>
           <p style="margin: 5px 0;"><strong>Ngày khởi hành:</strong> ${departureDate}</p>
           <p style="margin: 5px 0;"><strong>Ngày về:</strong> ${returnDate}</p>
-          <p style="margin: 5px 0;"><strong>Số khách:</strong> ${
-            booking.adultCount
-          } người lớn, ${booking.childCount} trẻ em</p>
+          <p style="margin: 5px 0;"><strong>Số khách:</strong> ${booking.adultCount
+    } người lớn, ${booking.childCount} trẻ em</p>
           <p style="margin: 5px 0; font-size: 18px; color: #dc2626;"><strong>Tổng tiền: ${booking.totalPrice.toLocaleString(
-            "vi-VN"
-          )}đ</strong></p>
+      "vi-VN"
+    )}đ</strong></p>
         </div>
 
-        <p>Chúng tôi sẽ sớm liên hệ qua số điện thoại <strong>${
-          booking.customerPhone
-        }</strong> để xác nhận và hướng dẫn thanh toán.</p>
+        <p>Chúng tôi sẽ sớm liên hệ qua số điện thoại <strong>${booking.customerPhone
+    }</strong> để xác nhận và hướng dẫn thanh toán.</p>
         
         <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 20px 0;" />
         

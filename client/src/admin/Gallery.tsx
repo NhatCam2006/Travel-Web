@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import ImageUpload from "../components/ImageUpload";
 import { FiTrash2, FiPlus } from "react-icons/fi";
 
+// Lấy API URL từ biến môi trường
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+
 type GalleryImage = {
   id: number;
   src: string;
@@ -12,8 +15,7 @@ type GalleryImage = {
 
 export default function AdminGallery() {
   const [images, setImages] = useState<GalleryImage[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  // Đã xóa loading và error vì không dùng đến
   const [form, setForm] = useState({
     src: "",
     title: "",
@@ -23,13 +25,11 @@ export default function AdminGallery() {
 
   const fetchImages = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/gallery");
+      const res = await fetch(`${API_URL}/api/gallery`);
       if (!res.ok) throw new Error("Không tải được ảnh");
       setImages(await res.json());
     } catch (err) {
       console.error(err);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -42,7 +42,7 @@ export default function AdminGallery() {
     if (!form.src) return alert("Vui lòng chọn ảnh");
 
     try {
-      const res = await fetch("http://localhost:5000/api/gallery", {
+      const res = await fetch(`${API_URL}/api/gallery`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
@@ -60,7 +60,7 @@ export default function AdminGallery() {
   const handleDelete = async (id: number) => {
     if (!confirm("Xoá ảnh này?")) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/gallery/${id}`, {
+      const res = await fetch(`${API_URL}/api/gallery/${id}`, {
         method: "DELETE",
         credentials: "include",
       });

@@ -24,7 +24,7 @@ type AuthContextType = {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const API = "http://localhost:5000";
+const API = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 function AuthProviderImpl({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<SessionUser>(null);

@@ -24,7 +24,7 @@ export default function ImageUpload({
   maxFiles = 5,
 }: ImageUploadProps) {
   const [images, setImages] = useState<string[]>(existingImages);
-  const [uploading, setUploading] = useState(false);
+  // Đã xóa state uploading và setUploading thừa
   const widgetRef = useRef<any>(null);
 
   useEffect(() => {
@@ -127,7 +127,7 @@ export default function ImageUpload({
         <button
           type="button"
           onClick={openWidget}
-          disabled={uploading}
+          // Đã xóa disabled={uploading} vì biến uploading đã xóa
           className="px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-blue-500 hover:text-blue-500 transition flex items-center gap-2"
         >
           <svg
@@ -144,7 +144,7 @@ export default function ImageUpload({
               d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
             />
           </svg>
-          {uploading ? "Đang tải..." : "Tải ảnh lên"}
+          Tải ảnh lên
         </button>
       )}
 
